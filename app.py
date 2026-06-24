@@ -1,4 +1,5 @@
 from modules.pdf_processor import extract_text_from_pdf
+from modules.text_chunker import create_chunks
 import streamlit as st
 import pymupdf
 def main():
@@ -11,4 +12,9 @@ if uploaded_file is not None:
     st.write(f"{uploaded_file.name} uploaded successfully!")
     pdf_bytes = uploaded_file.getvalue()
     extracted_text = extract_text_from_pdf(pdf_bytes)
-    st.write(extracted_text[:1000])  # Display the first 1000 characters of the extracted text
+    st.write(extracted_text[:20000])  # Display the first 1000 characters of the extracted text
+    createdChunks = create_chunks(extracted_text)
+    st.write(f"Chunk size: {len(createdChunks)}")
+    st.write(f"First Chunk: {createdChunks[0][0:500]}")
+    st.write(f"Last Chunk: {createdChunks[5][0:500]}")
+
