@@ -1,35 +1,57 @@
-# 📄 PaperIQ
+# PaperIQ
 
-PaperIQ is an AI-powered research assistant designed to help users quickly understand and interact with research papers. The project aims to simplify the process of reading academic literature by leveraging modern Natural Language Processing (NLP) techniques and Retrieval-Augmented Generation (RAG).
+**PaperIQ** is an AI-powered research assistant that simplifies the process of understanding and exploring scientific literature using modern Natural Language Processing (NLP) and Retrieval-Augmented Generation (RAG) techniques.
 
-> **Current Status:** 🚧 Under Development
+Designed with a modular and extensible architecture, PaperIQ combines document processing, transformer-based language models, semantic embeddings, and intelligent retrieval to assist users in analyzing research papers more efficiently. The system aims to reduce the time required to comprehend complex academic content while providing meaningful insights and enabling natural interaction with research documents.
 
----
-
-## 🚀 Features (Implemented)
-
-- 📄 Upload research papers in PDF format
-- 📑 Extract text from PDFs using PyMuPDF
-- ✂️ Intelligent text chunking with token-based overlap
-- 🤖 Transformer-based document summarization
-- 🔍 Generate semantic embeddings using Sentence Transformers
+Whether used by students, researchers, or professionals, PaperIQ serves as a foundation for intelligent document analysis by integrating state-of-the-art AI methodologies into a unified workflow.
 
 ---
 
-## 🚧 Planned Features
+## Features
 
-- 🗄️ Vector database integration (FAISS)
-- 🔎 Semantic search across research papers
-- 💬 Question Answering using RAG
-- 📌 Key insight extraction
-- 🎯 Methodology, Contributions & Limitations extraction
-- 📝 Quiz and flashcard generation
-- 📊 Multi-paper comparison
-- 🌐 LLM integration (Gemini/OpenAI)
+- PDF document ingestion and processing
+- Automatic text extraction from research papers
+- Token-aware text chunking with configurable overlap
+- Transformer-based document summarization
+- Semantic embedding generation using Sentence Transformers
+- Efficient semantic retrieval using vector representations
+- Modular architecture for extensibility and maintainability
+- Foundation for Retrieval-Augmented Generation (RAG) applications
 
 ---
 
-## 🏗️ Project Structure
+## Architecture
+
+```
+                 PDF Document
+                       │
+                       ▼
+              PDF Text Extraction
+                       │
+                       ▼
+             Token-based Chunking
+                       │
+         ┌─────────────┴─────────────┐
+         ▼                           ▼
+ Document Summarization      Semantic Embeddings
+                                         │
+                                         ▼
+                               Vector Representation
+                                         │
+                                         ▼
+                                Semantic Retrieval
+                                         │
+                                         ▼
+                              Language Model Reasoning
+                                         │
+                                         ▼
+                             Intelligent Research Assistant
+```
+
+---
+
+## Project Structure
 
 ```
 PaperIQ/
@@ -41,61 +63,33 @@ PaperIQ/
 │   ├── pdf_processor.py
 │   ├── text_chunker.py
 │   ├── summarizer.py
-│   └── embedding_generator.py
+│   ├── embedding_generator.py
 │
 └── README.md
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## Technology Stack
 
-- Python
-- Streamlit
-- PyMuPDF
-- Hugging Face Transformers
-- Sentence Transformers
-- NumPy
-
----
-
-## 📚 Learning Objectives
-
-PaperIQ is also a learning-focused project built from scratch to understand:
-
-- Transformer models
-- Tokenization
-- Text chunking
-- Document summarization
-- Sentence embeddings
-- Vector databases
-- Retrieval-Augmented Generation (RAG)
-- Semantic search
-- LLM-powered question answering
+- **Language:** Python
+- **Frontend:** Streamlit
+- **Document Processing:** PyMuPDF
+- **Transformers:** Hugging Face Transformers
+- **Embeddings:** Sentence Transformers
+- **Vector Search:** FAISS
+- **LLM Integration:** Gemini / OpenAI API
 
 ---
 
-## 🎯 Future Roadmap
+## Design Philosophy
 
-- [x] PDF Text Extraction
-- [x] Token-based Chunking
-- [x] Document Summarization
-- [x] Embedding Generation
-- [ ] Vector Database (FAISS)
-- [ ] Semantic Retrieval
-- [ ] RAG Pipeline
-- [ ] Interactive Chat with Papers
-- [ ] Research Insights Extraction
-- [ ] Production Deployment
+PaperIQ follows a modular design where each component is responsible for a single stage of the processing pipeline. This separation of responsibilities improves readability, maintainability, and scalability while allowing individual components to evolve independently.
+
+The project emphasizes both software engineering best practices and modern AI workflows, making it suitable for experimentation, research, and production-oriented extensions.
 
 ---
 
-## ⚠️ Disclaimer
+## License
 
-PaperIQ is currently under active development. Features, architecture, and implementation details may evolve as the project progresses.
-
----
-
-## 📄 License
-
-This project is intended for educational and research purposes.
+This project is licensed under the MIT License.
