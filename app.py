@@ -1,9 +1,12 @@
 from modules.pdf_processor import extract_text_from_pdf
 from modules.text_chunker import create_chunks
-from modules.summarizer import hierarchial_summarizer
 from modules.embedding_generator import generate_embedding,generate_embeddings
 import streamlit as st
-import pymupdf
+from modules.vector_store import (
+    create_index,
+    add_embeddings,
+    search_index
+)
 def main():
     st.title("PaperIQ!")
     st.subheader("AI-based research assistant for papers.")
@@ -20,17 +23,30 @@ if uploaded_file is not None:
     st.subheader("Final Summary")
     st.write(final_summary)
     """
-    embedding = generate_embedding(chunks[0])
+    embeddings = generate_embeddings(chunks)
+    dimension = embeddings[0].shape[0]
+    index = create_index(dimension)
+    add_embeddings(index,embeddings)
+    st.success("Vector database created successfully!")
 
-    st.subheader("Embedding Information")
+    st.write("Number of Chunks:", len(chunks))
+    st.write("Number of Embeddings:", len(embeddings))
+    st.write("Embedding Dimension:", dimension)
+    st.write("Vectors in Index:", index.ntotal)
+    
+    st.divider()
+    user_query = st.text_input("Ask a question about the paper")
 
-    st.write("Number of chunks: ",len(chunks))
-    st.write("Embedding Type: ",type(embedding))
-    st.write("Embedding Shape: ",embedding.shape)
+    if user_query:
+        query_embedding = generate_embedding(user_query)
+        distances, indices = search_index(index,query_embedding,top_k=5)
 
-    st.subheader("First Chunk")
-    st.write(chunks[0])
+        st.subheader("Retrieved Chunks")
 
-    st.subheader("Fiest 20 Embedding Values")
-    st.write(embedding[:20])
+        for rank,chunk_index in enumerate(indices,start=1):
+            st.markdown(f"### Result {rank}")
+            st.write(chunks[chunk_index])
 
+            st.caption(f"Chunk Index: {chunk_index}")
+            st.caption(f"L2 Distance: {distances[rank-1]:.4f}")
+    st.divider()
