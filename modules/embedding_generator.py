@@ -26,7 +26,7 @@ def load_embedding_model():
 
 embedding_model = load_embedding_model()
 
-def generate_embedding(chunk: str) -> np.ndarray:
+def generate_embedding(text: str) -> np.ndarray:
     """
     Generate a semantic embedding for a single text chunk.
 
@@ -36,9 +36,16 @@ def generate_embedding(chunk: str) -> np.ndarray:
 
     Returns:
         An numpy array representing semantic embeddings.
+    
+    embedding = embedding_model.encode(text, convert_to_numpy = True)
+    return embedding  """
 
-    """
-    embedding = embedding_model.encode(chunk, convert_to_numpy = True)
+
+    embedding = embedding_model.encode(
+        text,
+        convert_to_numpy=True
+    )
+
     return embedding
 
 def generate_embeddings(chunks: list[str]) -> list[np.ndarray]:

@@ -1,9 +1,11 @@
 from transformers import AutoTokenizer
 
-tokenizer = AutoTokenizer.from_pretrained("t5-small")
+tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-small-en-v1.5")
 
 def create_chunks(text,chunk_size = 512,overlap = 50):
-    tokens= tokenizer.encode(text)
+    tokens= tokenizer.encode(text,
+                             add_special_tokens = False,
+                             truncation = False)
     chunks = []
     stride = chunk_size - overlap
 
