@@ -2,6 +2,8 @@ from modules.pdf_processor import extract_text_from_pdf
 from modules.text_chunker import create_chunks
 from modules.embedding_generator import generate_embedding,generate_embeddings
 from modules.context_builder import build_context
+from modules.prompt_builder import build_prompt
+from modules.llm import generate_response
 import streamlit as st
 from modules.vector_store import (
     create_index,
@@ -21,7 +23,6 @@ if uploaded_file is not None:
     chunks = create_chunks(extracted_text)
     largest_index = max(range(len(chunks)), key=lambda i: len(chunks[i]))
 
-    st.write("Largest Chunk Index:", largest_index)
     """
     final_summary=hierarchial_summarizer(createdChunks)
     st.subheader("Final Summary")
@@ -46,8 +47,12 @@ if uploaded_file is not None:
         distances, indices = search_index(index,query_embedding,top_k=3)
 
         context = build_context(chunks,indices)
-
-        st.subheader("Generated Context")
-        st.text_area(label = "Context",
-                     value=context,
-                     height=500)
+        
+        prompt = build_prompt(context = context,
+                              question = user_query)
+        
+        with st.spinner("Generating answer..."):
+            answer = generate_response(prompt)
+            
+        st.subheader("Answer")
+        st.write(answer)

@@ -7,6 +7,7 @@ __pycache__/
 
 # Environment Variables
 .env
+.steamlit/
 
 # OS Files
 .DS_Store
