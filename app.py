@@ -1,4 +1,5 @@
 import streamlit as st
+import json
 
 from modules.context_builder import build_context
 from modules.vector_store import (
@@ -13,6 +14,7 @@ from modules.pdf_processor import extract_text_from_pdf
 from modules.prompt_builder import build_prompt
 from modules.insight_builder import build_insight_prompt
 from modules.summary_builder import build_summary_prompt
+from modules.quiz_builder import build_quiz_prompt
 from modules.text_chunker import create_chunks
 
 if "paper" not in st.session_state:
@@ -131,10 +133,74 @@ def main() -> None:
                     st.error(f"Failed to generate insights: {error}")
 
         elif feature == "Quiz Generator":
+# 1. Let the user select the number of questions
+            num_q = st.slider("Number of questions", min_value=3, max_value=10, value=5)
 
+            # 2. Generate the quiz and store it in session state
             if st.button("Generate Quiz"):
+                quiz_prompt = build_quiz_prompt(extracted_text, num_q)
+                
+                with st.spinner("Generating quiz..."):
+                    try:
+                        raw_response = generate_response(quiz_prompt)
+                        # Clean up the response in case the LLM adds markdown formatting like ```json
+                        cleaned_response = raw_response.replace("```json", "").replace("```", "").strip()
+                        
+                        # Parse JSON and store in session state so it persists during interaction
+                        st.session_state.quiz_data = json.loads(cleaned_response)
+                        st.session_state.show_results = False
+                        st.session_state.user_answers = {}
+                        
+                    except json.JSONDecodeError:
+                        st.error("Failed to parse the quiz format. Please try generating again.")
+                    except Exception as error:
+                        st.error(f"Failed to generate quiz: {error}")
 
-                st.info("Coming soon.")
+            # 3. Render the quiz if it exists in memory
+            if "quiz_data" in st.session_state:
+                st.subheader("Test Your Knowledge")
+                
+                # Using a form prevents Streamlit from refreshing the page on every single radio button click
+                with st.form("quiz_form"):
+                    user_answers = {}
+                    for i, q in enumerate(st.session_state.quiz_data):
+                        st.write(f"**Q{i+1}: {q['question']}**")
+                        
+                        # index=None ensures no option is selected by default
+                        user_answers[i] = st.radio(
+                            "Options", 
+                            q["options"], 
+                            key=f"q_{i}", 
+                            label_visibility="collapsed", 
+                            index=None
+                        )
+                        st.write("---")
+                    
+                    # Submit button for the form
+                    submitted = st.form_submit_button("Submit Answers")
+                    
+                    if submitted:
+                        st.session_state.user_answers = user_answers
+                        st.session_state.show_results = True
+
+                # 4. Evaluate and display results after submission
+                if st.session_state.get("show_results"):
+                    score = 0
+                    for i, q in enumerate(st.session_state.quiz_data):
+                        user_ans = st.session_state.user_answers.get(i)
+                        
+                        if user_ans == q["correct_answer"]:
+                            score += 1
+                            st.success(f"**Q{i+1} Correct!**\n\n{q['explanation']}")
+                        else:
+                            st.error(f"**Q{i+1} Incorrect.**\n\n**You chose:** {user_ans}\n\n**Correct answer:** {q['correct_answer']}\n\n*Explanation: {q['explanation']}*")
+                    
+                    st.write(f"### Final Score: {score} / {len(st.session_state.quiz_data)}")
+                    
+# Clear the quiz to start over (changed to standard st.button)
+                    if st.button("Clear Quiz"):
+                        del st.session_state.quiz_data
+                        st.rerun()
 
         elif feature == "Explain Concepts":
 
