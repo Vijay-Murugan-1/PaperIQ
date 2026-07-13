@@ -267,5 +267,3 @@ This project is licensed under the MIT License.
 Integrated M.Tech Computer Science and Engineering (Data Science)
 
 VIT Vellore
-
-GitHub: https://github.com/Vijay-Murugan-1
