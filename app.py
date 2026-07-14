@@ -14,6 +14,7 @@ from modules.pdf_processor import extract_text_from_pdf
 from modules.prompt_builder import build_prompt
 from modules.insight_builder import build_insight_prompt
 from modules.summary_builder import build_summary_prompt
+from modules.flashcard_builder import build_flashcard
 from modules.quiz_builder import build_quiz_prompt
 from modules.text_chunker import create_chunks
 
@@ -71,7 +72,6 @@ def main() -> None:
                 "Ask Questions",
                 "Key Insights",
                 "Quiz Generator",
-                "Explain Concepts",
                 "Flashcards"
             )
         )
@@ -194,13 +194,66 @@ def main() -> None:
                         del st.session_state.quiz_data
                         st.rerun()
 
-        elif feature == "Explain Concepts":
-
-            st.info("Coming soon.")
-
         elif feature == "Flashcards":
+            num_cards = st.slider("Number of Flashcards", min_value = 5,max_value = 20,value = 10)
             if st.button("Generate Flashcards"):
-                st.info("Coming soon.")
+                flashcard_prompt = build_flashcard(extracted_text,num_cards)
+
+                with st.spinner("Extracting key concepts for flashcards..."):
+                    try:
+                        raw_response = generate_response(flashcard_prompt)
+                        cleaned_response = raw_response.replace("'''json","").replace("'''","").strip()
+
+                        st.session_state.flashcards_data = json.loads(cleaned_response)
+                        st.session_state.current_card = 0
+                        st.session_state.is_flipped = False
+                    except json.JSONDecodeError:
+                        st.error("Failed to parse the flashcard format. Please try generating again.")
+                    except Exception as error:
+                        st.error(f"Falied to generate flashcards: {error}")
+            if "flashcards_data" in st.session_state:
+                cards = st.session_state.flashcards_data
+                idx = st.session_state.current_card
+                
+                st.markdown(f"### Card {idx + 1} of {len(cards)}")
+                
+                # Display the card content based on flip state
+                current_card_data = cards[idx]
+                
+                if not st.session_state.is_flipped:
+                    st.info(f"**Front (Concept / Question):**\n\n### {current_card_data['front']}")
+                else:
+                    st.success(f"**Back (Definition / Answer):**\n\n{current_card_data['back']}")
+
+                st.write("") # Spacer
+
+                # 3. Navigation and Flip Buttons
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    if st.button("⬅️ Previous", use_container_width=True, disabled=(idx == 0)):
+                        st.session_state.current_card -= 1
+                        st.session_state.is_flipped = False
+                        st.rerun()
+                        
+                with col2:
+                    if st.button("🔄 Flip Card", use_container_width=True):
+                        st.session_state.is_flipped = not st.session_state.is_flipped
+                        st.rerun()
+                        
+                with col3:
+                    if st.button("Next ➡️", use_container_width=True, disabled=(idx == len(cards) - 1)):
+                        st.session_state.current_card += 1
+                        st.session_state.is_flipped = False
+                        st.rerun()
+
+                st.divider()
+                
+                # Option to clear memory and start over
+                if st.button("Clear Deck"):
+                    del st.session_state.flashcards_data
+                    st.rerun()
+
 
 if __name__ == "__main__":    
     main()   
