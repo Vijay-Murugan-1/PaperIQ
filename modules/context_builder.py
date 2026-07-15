@@ -7,13 +7,14 @@ used as input to a Large Language Model (LLM).
 """
 import numpy as np
 
-def build_context(chunks: list[str],
+def build_context(chunks: list[dict],
                   indices: np.ndarray) ->str:
     """
     Build a context string from the retrieved chunks.
 
     Args:
-        chunks(list[str]): List containing all documnet chunks.
+        chunks(list[dict]): List containing all documnet chunks, where each chunk is
+         a dictionary containing 'page' and 'text'.
 
         indices(np.ndarray): Indices of the retrieved chunks 
         returned by FAISS.
@@ -25,8 +26,12 @@ def build_context(chunks: list[str],
     context = ""
 
     for rank,chunk_index in enumerate(indices,start=1):
-        context += f"Chunk{rank}\n"
-        context += "-"*50 + "\n"
-        context += chunks[chunk_index]
-        context +="\n\n"
+        if chunk_index < len(chunks):
+          chunk = chunks[chunk_index]  
+          page_num = chunk["page"]
+          chunk_text = chunk["text"]
+          context += f"Chunk{rank} (Source: Page {page_num})\n"
+          context += "-"*50 + "\n"
+          context += chunk_text
+          context +="\n\n"
     return context
