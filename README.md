@@ -257,6 +257,3 @@ PaperIQ aims to simplify research paper reading by combining semantic retrieval 
 
 **Vijay B V**
 
-Integrated M.Tech Computer Science and Engineering (Data Science)
-
-VIT Vellore
