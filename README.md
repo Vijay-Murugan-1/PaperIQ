@@ -252,8 +252,3 @@ PaperIQ aims to simplify research paper reading by combining semantic retrieval 
 - Export summaries and notes
 - Local LLM support
 
-
-# 👨‍💻 Author
-
-**Vijay B V**
-
