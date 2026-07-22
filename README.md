@@ -240,15 +240,3 @@ PaperIQ aims to simplify research paper reading by combining semantic retrieval 
 
 ---
 
-# 🔮 Future Improvements
-
-- Multi-document search
-- Hybrid Retrieval (BM25 + FAISS)
-- Source citations with page references
-- Cross-encoder reranking
-- Streaming LLM responses
-- Research paper metadata extraction
-- Conversation history
-- Export summaries and notes
-- Local LLM support
-
